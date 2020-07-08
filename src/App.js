@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import './App.css';
 import { forwardRef } from 'react';
 import Grid from '@material-ui/core/Grid'
@@ -11,7 +11,6 @@ import Edit from '@material-ui/icons/Edit';
 import FilterList from '@material-ui/icons/FilterList';
 import SaveAlt from '@material-ui/icons/SaveAlt';
 import Search from '@material-ui/icons/Search';
-import ViewColumn from '@material-ui/icons/ViewColumn';
 import axios from 'axios'
 import Alert from '@material-ui/lab/Alert';
 
@@ -25,30 +24,26 @@ const tableIcons = {
   ResetSearch: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
   Search: forwardRef((props, ref) => <Search {...props} ref={ref} />),
   SortArrow: forwardRef((props, ref) => <ArrowDownward {...props} ref={ref} />),
-  // ThirdStateCheck: forwardRef((props, ref) => <Remove {...props} ref={ref} />),
-  // ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
 };
 
 const api = axios.create({
   baseURL: `https://api-vm.herokuapp.com`
 })
 
-
-
-
 function App(props) {
 
 const {useState} = React
 
-  const [columns, setColumns] = useState([
+  const [columns] = useState([
 
     {title: "call_id", field: "call_id", hidden: true},
-    {title: "Status", field: "folder"},
-    {title: "From", field: "from"},
-    {title: "To", field: "to"},
-    {title: "Duration", field: "length"},
-    {title: "Caller_id", field: "caller_id_number"},
-    {title: "Time", field:"timestamp"}
+    {title: "Status", field: "folder", lookup:{'new':'New', 'deleted':'Deleted', 'saved':'Saved'},},
+    {title: "From", field: "from", editable: 'never'},
+    {title: "To", field: "to", editable: 'never'},
+    {title: "Duration", field: "length", editable: 'never'},
+    {title: "Caller_id", field: "caller_id_number", editable: 'never'},
+    {title: "Time", field:"timestamp", editable: 'never'}
+
   ])
 
 
@@ -98,7 +93,7 @@ const {useState} = React
   return (
     <div className="App">
 
-      <Grid container container spacing={1} >
+      <Grid container spacing={1} >
           <Grid item xs={3}></Grid>
           <Grid item xs={6}>
           <div>
@@ -122,8 +117,22 @@ const {useState} = React
                   }),
               }}
               options={{
-                search: false
+                headerStyle: {
+                  backgroundColor: '#00BC47',
+                  color: '#FFF'
+                },
+                search: false,
+                selection: true,
+                paging: false
               }}
+              actions={[
+                {
+                  tooltip: 'Remove All Selected Users',
+                  icon: 'delete',
+                  onClick: (evt, data) => alert('You want to delete ' + data.length + ' rows')
+                }
+              ]}
+
             />
           </Grid>
           <Grid item xs={3}></Grid>
