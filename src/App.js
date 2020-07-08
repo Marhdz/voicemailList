@@ -13,6 +13,7 @@ import SaveAlt from '@material-ui/icons/SaveAlt';
 import Search from '@material-ui/icons/Search';
 import axios from 'axios'
 import Alert from '@material-ui/lab/Alert';
+import Moment from 'react-moment';
 
 const tableIcons = {
   Check: forwardRef((props, ref) => <Check {...props} ref={ref} />),
@@ -26,6 +27,11 @@ const tableIcons = {
   SortArrow: forwardRef((props, ref) => <ArrowDownward {...props} ref={ref} />),
 };
 
+//Display date
+Moment.globalFormat = 'D MMM YYYY';
+
+
+//API url
 const api = axios.create({
   baseURL: `https://api-vm.herokuapp.com`
 })
@@ -34,16 +40,16 @@ function App(props) {
 
 const {useState} = React
 
-  const [columns] = useState([
 
+//title:table headers, field:API info
+  const [columns] = useState([
     {title: "call_id", field: "call_id", hidden: true},
     {title: "Status", field: "folder", lookup:{'new':'New', 'deleted':'Deleted', 'saved':'Saved'},},
     {title: "From", field: "from", editable: 'never'},
     {title: "To", field: "to", editable: 'never'},
     {title: "Duration", field: "length", editable: 'never'},
     {title: "Caller_id", field: "caller_id_number", editable: 'never'},
-    {title: "Time", field:"timestamp", editable: 'never'}
-
+    {title: "Time", type:"date", field:"timestamp", editable: 'never', render: rowData => <Moment unix>{rowData.timestamp}</Moment>}
   ])
 
 
@@ -53,6 +59,7 @@ const {useState} = React
   const [iserror, setIserror] = useState(false)
   const [errorMessages, setErrorMessages] = useState([])
 
+//gets data from api
   useEffect(() => {
     api.get("/users")
         .then(res => {
@@ -69,6 +76,7 @@ const {useState} = React
 
     if(errorList.length < 1){
       api.patch("/users/"+newData.call_id, newData)
+      //waits for an answer
       .then(res => {
         const dataUpdate = [...data];
         const index = oldData.tableData.call_id;
@@ -110,6 +118,7 @@ const {useState} = React
               columns={columns}
               data={data}
               icons={tableIcons}
+              //to edit the status
               editable={{
                 onRowUpdate: (newData, oldData) =>
                   new Promise((resolve) => {
@@ -122,16 +131,18 @@ const {useState} = React
                   color: '#FFF'
                 },
                 search: false,
-                selection: true,
+                //checkbox
+                selection: false,
                 paging: false
               }}
-              actions={[
-                {
-                  tooltip: 'Remove All Selected Users',
-                  icon: 'delete',
-                  onClick: (evt, data) => alert('You want to delete ' + data.length + ' rows')
-                }
-              ]}
+              //To use a checkbox, probable use
+              // actions={[
+              //   {
+              //     tooltip: 'Remove All Selected Users',
+              //     icon: 'delete',
+              //     onClick: (evt, data) => alert('You want to delete ' + data.length + ' rows')
+              //   }
+              // ]}
 
             />
           </Grid>

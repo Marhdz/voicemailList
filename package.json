@@ -14,10 +14,12 @@
     "express": "^4.17.1",
     "material-table": "^1.64.0",
     "material-ui": "^0.20.2",
+    "moment": "^2.27.0",
     "prop-types": "^15.7.2",
     "react": "^16.13.1",
     "react-avatar": "^3.9.7",
     "react-dom": "^16.13.1",
+    "react-moment": "^0.9.7",
     "react-scripts": "3.4.1"
   },
   "scripts": {
