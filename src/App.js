@@ -73,11 +73,25 @@ const {useState} = React
   const handleRowUpdate = (newData, oldData, resolve) => {
     //validation
     let errorList = []
+    var newFolder= newData.folder
+    var messages= newData.media_id
 
     if(errorList.length < 1){
-      api.patch("/users/"+newData.call_id, newData)
-      //waits for an answer
-      .then(res => {
+
+      var myHeaders = new Headers();
+      myHeaders.append("Content-Type", "application/json");
+
+      var raw = JSON.stringify({"data":{"folder":newFolder,"messages":[messages]}});
+
+      var requestOptions = {
+        method: 'POST',
+        headers: myHeaders,
+        body: raw,
+        redirect: 'follow'
+      };
+
+      fetch("https://api-vm.herokuapp.com/users/", requestOptions)
+      .then(response => {
         const dataUpdate = [...data];
         const index = oldData.tableData.call_id;
         dataUpdate[index] = newData;
@@ -85,13 +99,15 @@ const {useState} = React
         resolve()
         setIserror(false)
         setErrorMessages([])
+        response.text()
+        window.location.reload(false);
       })
       .catch(error => {
-        setErrorMessages(["Update failed! Server error"])
-        setIserror(true)
-        resolve()
-      })
-    }else{
+      setErrorMessages(["Update failed! Server error"])
+      setIserror(true)
+      resolve()
+      });
+    } else{
       setErrorMessages(errorList)
       setIserror(true)
       resolve()
